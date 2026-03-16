@@ -20,16 +20,26 @@ binary tree node, meaning it has a left, right, AND next, you may.)
 
 */
 
-void stack(){
-
-}
-
-void queue(){
-    
-}
-
 int main()
 {
-    cout << "Hello World!";
+    
+    /* NOTE TO SELF:
+        "Infix Notation (Normal numbers before operators)";
+        "Prefix Notation (Operator before number)";
+        "Postfix Notation (Operators all at the end)";
+    */
+    
+    cout << "==================" << endl;
+    cout << "Instructions: Enter a mathematical expression using four\nbasic arithmetic expressions." << endl;
+    cout << "==================" << endl;
+    
+    bool running = true;
+    while (running){
+        cout << "Enter an expression: ";
+        string expression;
+        cin >> expression;
+        
+        
+    }
     return 0;
 }
