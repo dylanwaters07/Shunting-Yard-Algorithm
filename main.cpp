@@ -1,5 +1,16 @@
+/*
+Dylan Waters
+3/16/26
+Shunting Yard Algorithm
+
+Description : .
+
+*/
+
 #include <iostream>
 #include <string>
+#include "queue.h"
+#include "stack.h"
 using namespace std;
 
 /*
@@ -20,8 +31,19 @@ binary tree node, meaning it has a left, right, AND next, you may.)
 
 */
 
-int main()
-{
+void infix(expression){
+    
+}
+
+void prefix(expression){
+    
+}
+
+void postfix(expression){
+    
+}
+
+int main(){
     
     /* NOTE TO SELF:
         "Infix Notation (Normal numbers before operators)";
@@ -30,16 +52,26 @@ int main()
     */
     
     cout << "==================" << endl;
-    cout << "Instructions: Enter a mathematical expression using four\nbasic arithmetic expressions." << endl;
+    cout << "Instructions: Enter an infix expression for the Shunting Yard Algorithm." << endl;
     cout << "==================" << endl;
     
     bool running = true;
     while (running){
-        cout << "Enter an expression: ";
         string expression;
-        cin >> expression;
+        cout << "Enter infix expression: ";
+        getline(cin, expression);
         
+        cout << "Infix:\n";
+        infix(expression);
+        cout << "\n" << endl;
         
+        cout << "Prefix:\n";
+        prefix(expression);
+        cout << "\n" << endl;
+        
+        cout << "Postfix:\n";
+        postfix(expression);
+        cout << "\n" << endl;
     }
     return 0;
 }
