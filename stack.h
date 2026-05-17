@@ -9,11 +9,39 @@ Dylan Waters
 
 #include "node.h"
 
+/* Stack class for managing a stack of nodes */
 class Stack{
     public:
-     void push();
-     void pop();
-     void peek();
+    Stack(){
+        top = nullptr;
+    }
+
+    void push(char c){
+        Node* newNode = new Node(c);
+        newNode->next = top;
+        top = newNode;
+    }
+
+    void pop() {
+        if (top != nullptr) {
+            Node* temp = top;
+            top = top->next;
+            delete temp;
+        }
+    }
+
+    char peek() {
+        if (top != nullptr) {
+            return top->data;
+        }
+        return '\0'; // Return null character if stack is empty
+    }
+
+    bool empty() {
+        return top == nullptr;
+    }
 
     private:
-};
+        Node* top;
+
+#endif // STACK_H
