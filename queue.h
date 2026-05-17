@@ -25,13 +25,7 @@ class Queue{
 
         void dequeue();
 
-        char front();
-
-        bool empty() {
-            return front == nullptr;
-        }
-
-        char front();
+        char frontData();
 
         bool empty() {
             return front == nullptr;

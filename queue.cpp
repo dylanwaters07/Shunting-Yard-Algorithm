@@ -37,7 +37,7 @@ void Queue::dequeue() {
 }
 
 // front returns the character at the front of the queue without removing it
-char Queue::front() {
+char Queue::frontData() {
     if (front != nullptr) {
         return front->getData();
     }
