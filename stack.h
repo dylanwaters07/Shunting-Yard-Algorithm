@@ -18,21 +18,21 @@ class Stack{
 
     void push(char c){
         Node* newNode = new Node(c);
-        newNode->next = top;
+        newNode->setNext(top);
         top = newNode;
     }
 
     void pop() {
         if (top != nullptr) {
             Node* temp = top;
-            top = top->next;
+            top = top->getNext();
             delete temp;
         }
     }
 
     char peek() {
         if (top != nullptr) {
-            return top->data;
+            return top->getData();
         }
         return '\0'; // Return null character if stack is empty
     }
@@ -43,5 +43,6 @@ class Stack{
 
     private:
         Node* top;
+};
 
 #endif // STACK_H
