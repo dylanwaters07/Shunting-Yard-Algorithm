@@ -16,18 +16,30 @@ class Stack{
         top = nullptr;
     }
 
+    void push(Node* node){
+        node->setNext(top);
+        top = node;
+    }
+
     void push(char c){
         Node* newNode = new Node(c);
         newNode->setNext(top);
         top = newNode;
     }
 
-    void pop() {
+    Node* top(){
+        return top;
+    }
+
+    char pop() {
         if (top != nullptr) {
             Node* temp = top;
             top = top->getNext();
+            char data = temp->getData();
             delete temp;
+            return data;
         }
+        return '\0';
     }
 
     char peek() {

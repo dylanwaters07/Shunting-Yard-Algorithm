@@ -61,20 +61,155 @@ Description :
 */
 
 #include <iostream>
-#include <string>
+#include <cstring>
+
+#include "node.h"
+#include "queue.h"
+#include "stack.h"
 
 using namespace std;
 
 
-void infix(string expression){
+/********************************************************************************************************** */
+/* The following shunting yard implementation is from https://en.wikipedia.org/wiki/Shunting_yard_algorithm */
+/********************************************************************************************************** */
+
+// Is token an operator? Note: The only operators in this project are +, -, *, /, and ^.
+bool isOperator(char token){
+    return token == '+' || token == '-' || token == '*' || token == '/' || token == '^';
+}
+
+// Is token left-associative? Note: The only left-associative operators in this project are +, -, *, and /.
+bool isLeftAssociative(char token){
+    return token == '+' || token == '-' || token == '*' || token == '/';
+}
+
+// Is token right-associative? Note: The only right-associative operator in this project is the power operator, '^'.
+bool isRightAssociative(char token){
+    return token == '^';
+}
+
+// What is the precedence of the operator? Higher number means higher precedence.
+int precedence(char token){
+    if (token == '+' || token == '-'){
+        return 1;
+    } else if (token == '*' || token == '/'){
+        return 2;
+    } else if (token == '^'){
+        return 3;
+    }
+    return 0; // For non-operators
+}
+
+// Take in an infix expression and output the postfix expression using the Shunting Yard algorithm. You will need to use a stack and a queue for this.  
+void shuntingYard(char* expression, Queue& outputQueue){
+
+    Stack stk; // Stack for operators
+
+    if (expression == nullptr){
+        cout << "Error: Null expression." << endl;
+        return;
+    }
+
+    int length = strlen(expression);
+
+    // 1. Read the tokens of the infix expression from left to right.
+    for (int i = 0; i < length; i++){
+
+        char token = expression[i]; // Assuming tokens are single characters and separated by spaces
+
+        // 2. If the token is an number, add it to the output queue.
+        if (isdigit(token)){
+            outputQueue.enqueue(token); // Add operand to output queue
+
+        // 3. If the token is an operator, o1, then:
+        } else if (isOperator(token)){
+            // a. While there is an operator, o2, at the top of the stack, and either:
+            //    i. o1 is left-associative and its precedence is less than or equal to that of o2, or
+            //    ii. o1 is right-associative and its precedence is less than that of o2
+            while (!stk.empty() && isOperator(stk.peek()) &&
+                   ((isLeftAssociative(token) && precedence(token) <= precedence(stk.peek())) ||
+                    (isRightAssociative(token) && precedence(token) < precedence(stk.peek())))) {
+                        // then pop o2 off the stack and onto the output queue;
+                        outputQueue.enqueue(stk.pop()); // Pop operator from stack to output queue
+            }
+            // b. Push o1 onto the stack.
+            stk.push(token); // Push current operator onto stack
+        // 4. If the token is a left parenthesis, push it onto the stack.
+        } else if (token == '('){
+            stk.push(token); // Push left parenthesis onto stack
+        // 5. If the token is a right parenthesis:
+        } else if (token == ')'){
+            // a. While the operator at the top of the stack is not a left parenthesis, pop the operator from the stack onto the output queue.
+            while (!stk.empty() && stk.peek() != '('){
+                outputQueue.enqueue(stk.pop()); // Pop operators from stack to output queue until left parenthesis is found
+            }
+            // b. Pop the left parenthesis from the stack, but not onto the output queue. If the stack runs out without finding a left parenthesis, then there are mismatched parentheses.
+            if (!stk.empty() && stk.peek() == '('){
+                stk.pop(); // Pop left parenthesis from stack
+            } else {
+                cout << "Error: Mismatched parentheses." << endl;
+                return;
+            }
+        }
+    }
+
+    // 6. When there are no more tokens to read:
+    // a. While there are still operator tokens in the stack:
+    while (!stk.empty()){
+        // i. If the operator token on the top of the stack is a parenthesis, then there are mismatched parentheses.
+        if (stk.peek() == '(' || stk.peek() == ')'){
+            cout << "Error: Mismatched parentheses." << endl;
+            return;
+        }
+        // ii. Pop the operator from the stack onto the output queue.
+        outputQueue.enqueue(stk.pop()); // Pop remaining operators from stack to output queue 
+    }
+}
+
+Node* buildExpressionTree(Queue& outputQueue) {
+    Stack treeStack; // Stack for building expression tree
+
+    while (!outputQueue.empty()) {
+
+        char token = outputQueue.frontData(); // Get front token from output queue
+
+        outputQueue.dequeue(); // Remove token from output queue
+
+        if (isdigit(token)){
+
+            // If token is an operand, create a tree node and push it onto the stack
+            Node* newNode = new Node(token);
+            treeStack.push(newNode); // Push pointer to tree node as char
+
+        } else if (isOperator(token)){
+
+            // If token is an operator, pop two nodes from the stack, create a new tree node with the operator, and push it back onto the stack
+            Node* rightNode = treeStack.top(); // Pop right operand
+            treeStack.pop(); // Remove right operand from stack
+            Node* leftNode = treeStack.top(); // Pop left operand
+            treeStack.pop(); // Remove left operand from stack
+
+            Node* newNode = new Node(token); // Create new tree node with operator
+            newNode->setLeft(leftNode); // Set left child
+            newNode->setRight(rightNode); // Set right child
+            treeStack.push(newNode); // Push pointer to new tree node as char
+        }
+    }
+
+    // The remaining node on the stack is the root of the expression tree
+    return treeStack.top(); // Return pointer to root of expression tree
+}
+
+void infix(char* expression){
     
 }
 
-void prefix(string expression){
+void prefix(char* expression){
     
 }
 
-void postfix(string expression){
+void postfix(char* expression){
     
 }
 
@@ -92,13 +227,13 @@ int main(){
     
     bool running = true;
     while (running){
-        string expression;
+        char expression[100];
         cout << "Enter infix expression: ";
-        getline(cin, expression);
-        
-        cout << "Infix:\n";
+        cin.getline(expression, 100);
+
+        cout << "Infix:" << endl;
         infix(expression);
-        cout << "\n" << endl;
+        cout << endl << endl;
         
         cout << "Prefix:\n";
         prefix(expression);

@@ -20,6 +20,8 @@ class Node{
     Node(char value){
         data = value;
         next = nullptr;
+        left = nullptr;
+        right = nullptr;
     }
 
     char getData(){
@@ -34,12 +36,34 @@ class Node{
         next = nextNode;
     }
 
+    void setLeft(Node* leftNode){
+        left = leftNode;
+    }
+
+    void setRight(Node* rightNode){
+        right = rightNode;
+    }
+
     Node* getNext(){
         return next;
     }
 
+    Node* getLeft(){
+        return left;
+    }
+
+    Node* getRight(){
+        return right;
+    }
+
     private:
+        // if used for stack or queue
         Node* next;
+
+        // If used for tree
+        Node* left;
+        Node* right;
+
         char data;
 };
 
