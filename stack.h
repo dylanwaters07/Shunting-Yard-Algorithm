@@ -27,7 +27,7 @@ class Stack{
         top = newNode;
     }
 
-    Node* top(){
+    Node* topNode(){
         return top;
     }
 
@@ -36,7 +36,7 @@ class Stack{
             Node* temp = top;
             top = top->getNext();
             char data = temp->getData();
-            delete temp;
+            //delete temp;
             return data;
         }
         return '\0';

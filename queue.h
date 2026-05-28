@@ -11,7 +11,10 @@ You can implement this using a linked list, with a front and back pointer.
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include <iostream>
 #include "node.h"
+
+using namespace std;
 
 /* Node class for linked list or binary tree */
 class Queue{
@@ -29,6 +32,15 @@ class Queue{
 
         bool empty() {
             return front == nullptr;
+        }
+
+        void printQueue() {
+            Node* current = front;
+            while (current != nullptr) {
+                cout << current->getData() << " ";
+                current = current->getNext();
+            }
+            cout << endl;
         }
 
     private:

@@ -111,6 +111,9 @@ void shuntingYard(char* expression, Queue& outputQueue){
         return;
     }
 
+// Add a bunch of debug statements to see what's going on with the shunting yard algorithm. Print the current token, the contents of the stack, and the contents of the output queue at each step.
+
+
     int length = strlen(expression);
 
     // 1. Read the tokens of the infix expression from left to right.
@@ -120,6 +123,7 @@ void shuntingYard(char* expression, Queue& outputQueue){
 
         // 2. If the token is an number, add it to the output queue.
         if (isdigit(token)){
+            //cout << "Token is an operand: " << token << endl;
             outputQueue.enqueue(token); // Add operand to output queue
 
         // 3. If the token is an operator, o1, then:
@@ -131,21 +135,27 @@ void shuntingYard(char* expression, Queue& outputQueue){
                    ((isLeftAssociative(token) && precedence(token) <= precedence(stk.peek())) ||
                     (isRightAssociative(token) && precedence(token) < precedence(stk.peek())))) {
                         // then pop o2 off the stack and onto the output queue;
+                        //cout << "Token is an operator: " << token << endl;
                         outputQueue.enqueue(stk.pop()); // Pop operator from stack to output queue
             }
             // b. Push o1 onto the stack.
+            //cout << "Pushing operator onto stack: " << token << endl;
             stk.push(token); // Push current operator onto stack
         // 4. If the token is a left parenthesis, push it onto the stack.
         } else if (token == '('){
+            //cout << "Token is a left parenthesis: " << token << endl;
             stk.push(token); // Push left parenthesis onto stack
         // 5. If the token is a right parenthesis:
         } else if (token == ')'){
+            //cout << "Token is a right parenthesis: " << token << endl;
             // a. While the operator at the top of the stack is not a left parenthesis, pop the operator from the stack onto the output queue.
             while (!stk.empty() && stk.peek() != '('){
+                //cout << "Popping operator from stack to output queue: " << stk.peek() << endl;
                 outputQueue.enqueue(stk.pop()); // Pop operators from stack to output queue until left parenthesis is found
             }
             // b. Pop the left parenthesis from the stack, but not onto the output queue. If the stack runs out without finding a left parenthesis, then there are mismatched parentheses.
             if (!stk.empty() && stk.peek() == '('){
+                //cout << "Popping left parenthesis from stack." << endl;
                 stk.pop(); // Pop left parenthesis from stack
             } else {
                 cout << "Error: Mismatched parentheses." << endl;
@@ -163,6 +173,7 @@ void shuntingYard(char* expression, Queue& outputQueue){
             return;
         }
         // ii. Pop the operator from the stack onto the output queue.
+        //cout << "Popping remaining operator from stack to output queue: " << stk.peek() << endl;
         outputQueue.enqueue(stk.pop()); // Pop remaining operators from stack to output queue 
     }
 }
@@ -174,22 +185,28 @@ Node* buildExpressionTree(Queue& outputQueue) {
 
         char token = outputQueue.frontData(); // Get front token from output queue
 
+        //cout << "Processing token: " << token << endl;
+
         outputQueue.dequeue(); // Remove token from output queue
 
         if (isdigit(token)){
 
+            //cout << "Pushing operand onto tree stack: " << token << endl;
             // If token is an operand, create a tree node and push it onto the stack
             Node* newNode = new Node(token);
             treeStack.push(newNode); // Push pointer to tree node as char
 
-        } else if (isOperator(token)){
+        } else { //} if (isOperator(token)){
 
             // If token is an operator, pop two nodes from the stack, create a new tree node with the operator, and push it back onto the stack
-            Node* rightNode = treeStack.top(); // Pop right operand
+            Node* rightNode = treeStack.topNode(); // Pop right operand
+            //cout << "Popping right operand from tree stack: " << rightNode->getData() << endl;
             treeStack.pop(); // Remove right operand from stack
-            Node* leftNode = treeStack.top(); // Pop left operand
+            Node* leftNode = treeStack.topNode(); // Pop left operand
+            //cout << "Popping left operand from tree stack: " << leftNode->getData() << endl;
             treeStack.pop(); // Remove left operand from stack
 
+            //cout << "Creating new tree node with operator: " << token << endl;
             Node* newNode = new Node(token); // Create new tree node with operator
             newNode->setLeft(leftNode); // Set left child
             newNode->setRight(rightNode); // Set right child
@@ -198,21 +215,39 @@ Node* buildExpressionTree(Queue& outputQueue) {
     }
 
     // The remaining node on the stack is the root of the expression tree
-    return treeStack.top(); // Return pointer to root of expression tree
+    return treeStack.topNode(); // Return pointer to root of expression tree
 }
 
-void infix(char* expression){
-    
+// Function to print the expression tree in infix notation
+void infix(Node* node){
+    if (node != nullptr && node->getLeft() && node->getRight()){
+        infix(node->getLeft()); // Recursively print left subtree
+        cout << node->getData() << " "; // Print root data
+        infix(node->getRight()); // Recursively print right subtree
+    } else {
+        cout << node->getData() << " "; // Print leaf node data
+    }
 }
 
-void prefix(char* expression){
-    
+// Function to print the expression tree in prefix notation
+void prefix(Node* node){
+    if (node != nullptr){
+        cout << node->getData() << " "; // Print root data
+        prefix(node->getLeft()); // Recursively print left subtree
+        prefix(node->getRight()); // Recursively print right subtree
+    }
 }
 
-void postfix(char* expression){
-    
+// Function to print the expression tree in postfix notation
+void postfix(Node* node){
+    if (node != nullptr){
+        postfix(node->getLeft()); // Recursively print left subtree
+        postfix(node->getRight()); // Recursively print right subtree
+        cout << node->getData() << " "; // Print root data
+    }
 }
 
+// Main function to run the program.
 int main(){
     
     /* NOTE TO SELF:
@@ -231,16 +266,32 @@ int main(){
         cout << "Enter infix expression: ";
         cin.getline(expression, 100);
 
+        Queue outputQueue; // Queue for output of Shunting Yard algorithm
+
+        //cout << "Converting infix to postfix using Shunting Yard algorithm..." << endl;
+        shuntingYard(expression, outputQueue); // Convert infix to postfix using Shunting Yard algorithm
+
+        //cout << "Printing output queue (postfix expression)..." << endl;
+        //outputQueue.printQueue(); // Print the contents of the output queue (postfix expression)
+
+        //cout << "Building expression tree from postfix notation..." << endl;
+        Node* root = buildExpressionTree(outputQueue); // Build expression tree from postfix notation
+        
+        if (root == nullptr){
+            cout << "Error: Failed to build expression tree." << endl;
+            continue;
+        }
+
         cout << "Infix:" << endl;
-        infix(expression);
+        infix(root);
         cout << endl << endl;
         
         cout << "Prefix:\n";
-        prefix(expression);
+        prefix(root);
         cout << "\n" << endl;
         
         cout << "Postfix:\n";
-        postfix(expression);
+        postfix(root);
         cout << "\n" << endl;
     }
     return 0;
